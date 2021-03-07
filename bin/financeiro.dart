@@ -22,7 +22,7 @@ void menu(){
 
 today() async {
   var data = await getData();
-  print('\n\n###################### HG Brasil - Cotacao ######################');
+  print('\n\n###################### HG Brasil - Cotação ######################');
   print('${data['date']} -> ${data['data']}');
 }
 
@@ -35,15 +35,25 @@ Future getData() async {
     print(data);
     var usd = data['USD'];
     var eur = data['EUR'];
+    var gbp = data['GBP'];
+    var ars = data['ARS'];
+    var btc = data['BTC'];
 
     Map formatedData = Map();
-    formatedData['date'] = '25/01/2019'; //now();
-    formatedData['data'] = '${usd['name']}: ${usd['buy']} | ${eur['name']}: ${eur['buy']}';
+    formatedData['date'] = now();
+    formatedData['data'] =
+        '${usd['name']}: ${usd['buy']} | '
+        '${eur['name']}: ${eur['buy']} | '
+        '${gbp['name']}: ${gbp['buy']} | '
+        '${ars['name']}: ${ars['buy']} |'
+        '${btc['name']}: ${btc['buy']}';
 
     return formatedData;
-
-  } else {
+  } else
     throw('Falhou');
-  }
+}
 
+String now() {
+  var now = DateTime.now();
+  return '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year.toString().padLeft(2, '0')}';
 }
