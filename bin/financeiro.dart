@@ -9,20 +9,22 @@ main() {
 void menu(){
   print('########### Inicio ###############');
   print('\nSelecione uma das opcoes abaixo');
-  print('1 - Ver a cotacao de hoje');
-  print('2- Registrar a cotação de hoje');
+  print('1 - Ver a cotação de hoje');
+  print('2 - Registrar a cotação de hoje');
+  print('3 - Ver cotações registradas');
 
   String option = stdin.readLineSync();
 
   switch(int.parse(option)) {
     case 1: today(); break;
     case 2: registerData(); break;
+    case 3: listData(); break;
     default: print('\n\nOpcoes invalida. Selecione uma opcao valida\n\n'); break;
   }
 
 }
 
-registerData() async {
+void registerData() async {
    var hgData = await getData();
    dynamic fileData = readFile();
    
@@ -52,6 +54,17 @@ registerData() async {
      print('\n\n############### Registro não adicionado, já existe um log financeiro de hoje cadastrado! ###############');
 }
 
+void listData() async {
+  dynamic fileData = readFile();
+  fileData = (fileData != null && fileData.length > 0 ? json.decode(fileData) : []);
+
+  print('\n\n########### Listagem dos dados ###############');
+
+  fileData.forEach((data) {
+    print('${data['date']} -> ${data['data']}');
+  });
+}
+
 String readFile() {
   Directory dir = Directory.current;
   File file = new File(dir.path + '/meu_arquivo.txt');
@@ -64,7 +77,7 @@ String readFile() {
   return file.readAsStringSync();
 }
 
-today() async {
+void today() async {
   var data = await getData();
   print('\n\n###################### HG Brasil - Cotação ######################');
   print('${data['date']} -> ${data['data']}');
