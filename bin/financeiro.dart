@@ -10,14 +10,58 @@ void menu(){
   print('########### Inicio ###############');
   print('\nSelecione uma das opcoes abaixo');
   print('1 - Ver a cotacao de hoje');
+  print('2- Registrar a cotação de hoje');
 
   String option = stdin.readLineSync();
 
   switch(int.parse(option)) {
     case 1: today(); break;
+    case 2: registerData(); break;
     default: print('\n\nOpcoes invalida. Selecione uma opcao valida\n\n'); break;
   }
 
+}
+
+registerData() async {
+   var hgData = await getData();
+   dynamic fileData = readFile();
+   
+   fileData = (fileData != null && fileData.length > 0 ? json.decode(fileData) : []);
+
+   bool exists = false;
+
+   fileData.forEach((data) {
+     if(data['date'] == now())
+       exists = true;
+   });
+
+   if(!exists) {
+     fileData.add({"date": now(), "data": "${hgData['data']}"});
+
+     Directory dir = Directory.current;
+     File file = new File(dir.path + '/meu_arquivo.txt');
+     RandomAccessFile raf = file.openSync(mode: FileMode.write);
+
+     raf.writeStringSync(json.encode(fileData).toString());
+     raf.flushSync();
+     raf.closeSync();
+
+     print('\n\n############### Dados salvos com sucesso! ###############');
+   }
+   else
+     print('\n\n############### Registro não adicionado, já existe um log financeiro de hoje cadastrado! ###############');
+}
+
+String readFile() {
+  Directory dir = Directory.current;
+  File file = new File(dir.path + '/meu_arquivo.txt');
+
+  if(!file.existsSync()) {
+    print('Arquivo não encontrado');
+    return null;
+  }
+
+  return file.readAsStringSync();
 }
 
 today() async {
@@ -45,7 +89,7 @@ Future getData() async {
         '${usd['name']}: ${usd['buy']} | '
         '${eur['name']}: ${eur['buy']} | '
         '${gbp['name']}: ${gbp['buy']} | '
-        '${ars['name']}: ${ars['buy']} |'
+        '${ars['name']}: ${ars['buy']} | '
         '${btc['name']}: ${btc['buy']}';
 
     return formatedData;
